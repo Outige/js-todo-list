@@ -73,7 +73,7 @@ function deleteCheck(event) {
         });
     }
 
-    if (item.classList[0] === 'complete-btn') {
+    else if (item.classList[0] === 'complete-btn') {
         const todo = item.parentElement;
 
         // either delete todo from todos or todosCompleted
@@ -87,6 +87,14 @@ function deleteCheck(event) {
         }
 
         todo.classList.toggle('completed');
+    }
+
+    else if (item.classList[0] === 'todo-item') {
+        //TODO loop through todoList and collapse any non-busy editing divs
+        const todo = item.parentElement;
+        console.log(todo.innerText);
+        console.log(todoList.indexOf(todo));
+        todo.innerHTML = '<form><input value="' + todo.innerText + '"><button class="todo-button"><i class="fas fa-edit"></i></button></form>';
     }
 }
 
