@@ -13,7 +13,7 @@ function addTodo(event) {
     // happens when the add todo button is clicked
     event.preventDefault(); // Stop button from submiting and refreshing
 
-    saveLocalTodos(todoInput.value, 'todos');
+    saveLocalTodosPrime(todoInput.value, 'todos');
 
     const todoDiv = document.createElement('div');
     todoDiv.classList.add('todo');
@@ -78,13 +78,34 @@ function deleteCheck(event) {
 
         // either delete todo from todos or todosCompleted
         // then add the todo to the other list
-        if (Array.from(todo.classList).indexOf('completed') < 0) {
-            deleteTodoFromLocalStorage(todo.innerText, 'todos');
-            saveLocalTodos(todo.innerText, 'todosCompleted');
+        // if (Array.from(todo.classList).indexOf('completed') < 0) {
+        //     // deleteTodoFromLocalStorage(todo.innerText, 'todos');
+        //     // saveLocalTodos(todo.innerText, 'todosCompleted');
+        // } else {
+        //     deleteTodoFromLocalStorage(todo.innerText, 'todosCompleted');
+        //     saveLocalTodos(todo.innerText, 'todos');
+        // }
+
+        let todos;
+        if (localStorage.getItem("todos") == null) {
+            todos = [];
         } else {
-            deleteTodoFromLocalStorage(todo.innerText, 'todosCompleted');
-            saveLocalTodos(todo.innerText, 'todos');
+            todos = JSON.parse(localStorage.getItem("todos"));
         }
+
+        console.log(todos.length);
+        for (var i = 0; i < todos.length; i++) {
+            if (todos[i]['todo'] === todo.innerText) {
+                if (todos[i]['type'] === 'completed') {
+                    todos[i]['type'] = 'uncompleted';
+                } else {
+                    todos[i]['type'] = 'completed';
+                }
+                break;
+            }
+        }
+        localStorage.setItem("todos", JSON.stringify(todos));
+
 
         todo.classList.toggle('completed');
     }
@@ -93,7 +114,8 @@ function deleteCheck(event) {
         //TODO loop through todoList and collapse any non-busy editing divs
         const todo = item.parentElement;
         console.log(todo.innerText);
-        console.log(todoList.indexOf(todo));
+        console.log(todoList.innerHTML);
+        console.log({"a": 0}["a"]);
         todo.innerHTML = '<form><input value="' + todo.innerText + '"><button class="todo-button"><i class="fas fa-edit"></i></button></form>';
     }
 }
@@ -112,6 +134,20 @@ function saveLocalTodos(todo, structure) {
     localStorage.setItem(structure, JSON.stringify(todos));
 }
 
+function saveLocalTodosPrime(todo) {
+    // update on of the todo local storage structures
+    // with a new todo, then save back to local storage
+    let todos;
+    if (localStorage.getItem("todos") == null) {
+        todos = [];
+    } else {
+        todos = JSON.parse(localStorage.getItem("todos"));
+    }
+
+    todos.push({"todo": todo, "type": "uncompleted"});
+    localStorage.setItem("todos", JSON.stringify(todos));
+}
+
 function getLocalTodos() {
     // load uncompleted todos on document load
     let todos;
@@ -127,7 +163,10 @@ function getLocalTodos() {
     
         const newTodo = document.createElement('li');
         newTodo.classList.add('todo-item');
-        newTodo.innerText = todo;
+        newTodo.innerText = todo['todo'];
+        if (todo['type'] === 'completed') {
+            todoDiv.classList.add(todo['type']);
+        }
         todoDiv.appendChild(newTodo);
     
         const completedButton = document.createElement('button');
