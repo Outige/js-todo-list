@@ -39,6 +39,7 @@ form button {
 form button:hover {
     color: wheat;
     background-color: #d88771;
+    transition: all 0.3s ease;
 }
 
 .todo-container {
